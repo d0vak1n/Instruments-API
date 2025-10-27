@@ -1,0 +1,58 @@
+name: Build and Deploy
+
+on:
+    push:
+        branches:
+            - main # Trigger on push to main branch
+    workflow_dispatch: # Allow manual trigger from GitHub Actions tab
+
+jobs:
+    build-and-deploy:
+        runs-on: ubuntu-latest
+
+        permissions:
+            contents: write # Required to push to the repository
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0 # Fetch all history for all branches
+
+            - name: Setup Bun
+              uses: oven-sh/setup-bun@v1
+              with:
+                  bun-version: latest
+
+            - name: Install dependencies
+              run: bun install
+
+            - name: Build project
+              run: bun run build
+
+            - name: Deploy to build branch
+              run: |
+                  # Configure git
+                  git config --global user.name "github-actions[bot]"
+                  git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+                  # Create or switch to build branch
+                  git checkout --orphan build-deploy
+
+                  # Remove all files except dist
+                  git rm -rf .
+
+                  # Move dist contents to root
+                  mv dist/* .
+                  mv dist/.* . 2>/dev/null || true
+                  rmdir dist
+
+                  # Create .nojekyll file for GitHub Pages compatibility
+                  touch .nojekyll
+
+                  # Add and commit all files
+                  git add -A
+                  git commit -m "Deploy build from ${{ github.sha }}" || echo "No changes to commit"
+
+                  # Force push to build branch
+                  git push origin build --force
