@@ -30,30 +30,9 @@ jobs:
             - name: Build project
               run: bun run build
 
-            - name: Deploy to build branch
-              run: |
-                  # Configure git
-                  git config --global user.name "github-actions[bot]"
-                  git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-                  # Create or switch to build branch
-                  git checkout --orphan build-deploy
-
-                  # Remove all files except dist
-                  git rm -rf .
-                  rm -R node_modules/
-
-                  # Move dist contents to root
-                  mv dist/* .
-                  mv dist/.* . 2>/dev/null || true
-                  rmdir dist
-
-                  # Create .nojekyll file for GitHub Pages compatibility
-                  touch .nojekyll
-
-                  # Add and commit all files
-                  git add -A
-                  git commit -m "Deploy build from ${{ github.sha }}" || echo "No changes to commit"
-
-                  # Force push to build branch
-                  git push origin build --force
+            - name: Deploy build
+              uses: peaceiris/actions-gh-pages@v4
+              with:
+                github_token: ${{ secrets.GH_TOKEN }}
+                publish_dir: dist
+                publish_branch: build-deploy
