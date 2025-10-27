@@ -41,6 +41,7 @@ jobs:
 
                   # Remove all files except dist
                   git rm -rf .
+                  rm -R node_modules/
 
                   # Move dist contents to root
                   mv dist/* .
