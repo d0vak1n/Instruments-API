@@ -19,8 +19,8 @@ To run the application locally, follow these steps:
    - Create a `.env` file in the project root.
    - Add your Supabase project URL and anon key to the `.env` file:
    ```
-    VITE_SUPABASE_URL=your-supabase-url
-    VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+    VITE_SUPABASE_URL=https://your-project.supabase.co
+    VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.example-anon-key
    ```
 4. **Run the development server:**
    ```bash
